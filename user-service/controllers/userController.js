@@ -10,6 +10,24 @@ exports.listUsers = async (req, res, next) => {
 };
 
 
+exports.getUser = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.params.id).lean();
+    if (!user) {
+      const e = new Error('User not found');
+      e.statusCode = 404;
+      return next(e);
+    }
+    res.json({ success: true, data: user });
+  } catch (err) {
+    if (err.name === 'CastError') {
+      const e = new Error('Invalid user id');
+      e.statusCode = 400;
+      return next(e);
+    }
+    next(err);
+  }
+}; 
 
 exports.createUser = async (req, res, next) => {
   try {
